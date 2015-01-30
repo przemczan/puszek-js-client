@@ -1,1 +1,1 @@
-# puszek-js-client
+# Puszek JavaScript client library

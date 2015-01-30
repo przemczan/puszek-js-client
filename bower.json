@@ -1,0 +1,16 @@
+{
+    "name": "puszek-js-client",
+    "version": "1.0.0",
+    "main": "puszek-js-client.min.js",
+    "ignore": [
+        "**/.*",
+        "test",
+        "*.md",
+        "AUTHORS.txt",
+        "Gruntfile.js",
+        "package.json"
+    ],
+    "dependencies": {
+        "jquery": "~2.1.3"
+    }
+}
