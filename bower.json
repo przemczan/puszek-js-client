@@ -8,7 +8,7 @@
         "type": "git",
         "url": "git://github.com/przemczan/puszek-js-client.git"
     },
-    "main": "puszek-js-client.min.js",
+    "main": "dist/puszek-js-client.js",
     "ignore": [
         "**/.*",
         "test",
