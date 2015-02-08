@@ -1,12 +1,16 @@
 (function(window) {
 
     window.Puszek = window.Puszek || {};
+    window.Puszek.connector = window.Puszek.connector || {};
+    window.Puszek.utils = window.Puszek.utils || {};
+    window.Puszek.model = window.Puszek.model || {};
+    window.Puszek.model.message = window.Puszek.model.message || {};
 
 })(window);
 
 (function(window, $) {
 
-    window.Puszek.SocketRequest = {
+    window.Puszek.connector.Request = {
         TYPE_MESSAGE_MARK_AS_READ: 'message_mark_as_read',
 
         create: function() {
@@ -73,124 +77,7 @@
 })(window, jQuery);
 
 (function(window, $) {
-
-    window.Puszek.SocketRequest.Message = {
-        create: function() {
-            return new Message();
-        }
-    };
-
-    function Message() {
-
-        /**
-         * @type {Message}
-         */
-        var self = this,
-            data = {
-                message: null,
-                sender: null,
-                receivers: []
-            };
-
-        /**
-         * Sets message
-         * @param _message
-         * @returns {Message}
-         */
-        this.message = function (_message) {
-            data.message = _message;
-
-            return self;
-        };
-
-        /**
-         * Sets sender name
-         * @param _sender
-         * @returns {Message}
-         */
-        this.sender = function (_sender) {
-            data.sender = _sender;
-
-            return self;
-        };
-
-        /**
-         * Sets receivers list
-         * @param _receivers
-         * @returns {Message}
-         */
-        this.receivers = function (_receivers) {
-            if ($.isArray(_receivers)) {
-                data.receivers = _receivers;
-            } else {
-                throw 'Message receivers have to be an array';
-            }
-
-            return self;
-        };
-
-        /**
-         *
-         * @returns {Object}
-         */
-        this.get = function() {
-            return data;
-        };
-    }
-})(window, jQuery);
-
-(function(window, $) {
-
-    window.Puszek.SocketRequest.MessageIdList = {
-        create: function() {
-            return new MessageIdList();
-        }
-    };
-
-    function MessageIdList() {
-
-        /**
-         * Empty response object
-         * @type {*}
-         * @private
-         */
-        var self = this,
-            data = [];
-
-        /**
-         * Sets response data
-         * @param _ids
-         * @returns {*}
-         */
-        this.ids = function (_ids) {
-            data = _ids;
-
-            return self;
-        };
-
-        /**
-         *
-         * @param _id
-         * @returns {*}
-         */
-        this.push = function (_id) {
-            data.push(_id);
-
-            return self;
-        };
-
-        /**
-         *
-         * @returns {Array}
-         */
-        this.get = function() {
-            return data;
-        };
-    }
-})(window, jQuery);
-
-(function(window, $) {
-    window.Puszek.Socket = function (_config) {
+    window.Puszek.connector.Socket = function (_config) {
 
         var $self = $(this), // jquery version of this
             self = this, // this ;)
@@ -258,12 +145,16 @@
          * @param _message
          */
         function onMessage(_message) {
+            var packet = false;
             try {
-                var packet = JSON.parse(_message.data);
+                packet = JSON.parse(_message.data);
+            } catch (e) {}
+
+            if (packet) {
                 $self.trigger('pre.packet', [packet]);
                 $self.trigger('packet', [packet]);
                 $self.trigger('post.packet', [packet]);
-            } catch (e) {}
+            }
         }
 
         /**
@@ -338,8 +229,8 @@
          */
         this.markAsRead = function(messageIds) {
             self.send(
-                Puszek.SocketRequest.TYPE_MESSAGE_MARK_AS_READ,
-                Puszek.SocketRequest.MessageIdList.create().ids(messageIds).get()
+                Puszek.connector.Request.TYPE_MESSAGE_MARK_AS_READ,
+                Puszek.connector.Request.MessageIdList.create().ids(messageIds).get()
             );
 
             return self;
@@ -370,7 +261,7 @@
          */
         this.send = function(_type, _data) {
             if (socket) {
-                Puszek.SocketRequest.create()
+                Puszek.connector.Request.create()
                     .type(_type)
                     .data(_data)
                     .send(socket);
@@ -382,5 +273,305 @@
         if (typeof _config == 'object') {
             this.configure(_config);
         }
+    };
+})(window, jQuery);
+
+(function(window, $) {
+
+    window.Puszek.model.message.Message = {
+        create: function() {
+            return new Message();
+        }
+    };
+
+    function Message() {
+
+        /**
+         * @type {Message}
+         */
+        var self = this,
+            data = {
+                message: null,
+                sender: null,
+                receivers: []
+            };
+
+        /**
+         * Sets message
+         * @param _message
+         * @returns {Message}
+         */
+        this.message = function (_message) {
+            data.message = _message;
+
+            return self;
+        };
+
+        /**
+         * Sets sender name
+         * @param _sender
+         * @returns {Message}
+         */
+        this.sender = function (_sender) {
+            data.sender = _sender;
+
+            return self;
+        };
+
+        /**
+         * Sets receivers list
+         * @param _receivers
+         * @returns {Message}
+         */
+        this.receivers = function (_receivers) {
+            if ($.isArray(_receivers)) {
+                data.receivers = _receivers;
+            } else {
+                throw 'Message receivers have to be an array';
+            }
+
+            return self;
+        };
+
+        /**
+         *
+         * @returns {Object}
+         */
+        this.get = function() {
+            return data;
+        };
+    }
+})(window, jQuery);
+
+(function(window, $) {
+
+    window.Puszek.model.message.MessageIdList = {
+        create: function() {
+            return new MessageIdList();
+        }
+    };
+
+    function MessageIdList() {
+
+        /**
+         * Empty response object
+         * @type {*}
+         * @private
+         */
+        var self = this,
+            data = [];
+
+        /**
+         * Sets response data
+         * @param _ids
+         * @returns {*}
+         */
+        this.ids = function (_ids) {
+            data = _ids;
+
+            return self;
+        };
+
+        /**
+         *
+         * @param _id
+         * @returns {*}
+         */
+        this.push = function (_id) {
+            data.push(_id);
+
+            return self;
+        };
+
+        /**
+         *
+         * @returns {Array}
+         */
+        this.get = function() {
+            return data;
+        };
+    }
+})(window, jQuery);
+
+(function(window, $) {
+    window.Puszek.utils.MessageChannel = function(_socket, _config) {
+
+        var $self = $(this);
+
+        /**
+         * Current messages list
+         * @type {Object}
+         */
+        var messages = [];
+
+        /**
+         *
+         * @type {Object}
+         */
+        var settings = {};
+
+        /**
+         * @type {Puszek.Socket}
+         */
+        var socket;
+
+        /**
+         *
+         * @param _id
+         * @returns {number}
+         */
+        function getMessageIndexById(_id) {
+            return getMessageIndexBy('_id', _id);
+        }
+
+        /**
+         *
+         * @param field
+         * @param value
+         * @returns {number}
+         */
+        function getMessageIndexBy(field, value) {
+            var index = -1;
+            angular.forEach(messages, function (message, key) {
+                if (message[field] == value) {
+                    index = key;
+                }
+            });
+
+            return index;
+        }
+
+        /**
+         * Got message!
+         * @asynchronous
+         * @param event
+         * @param _packet
+         */
+        function onPacket(event, _packet) {
+            try {
+                var accepted = settings.filter(_packet);
+                if (accepted === undefined || accepted === true) {
+                    $self.trigger('packet', [_packet]);
+
+                    if (getMessageIndexById(_packet.data._id) < 0) {
+                        messages.push(_packet.data);
+                    }
+                }
+            } catch (error) {
+                $self.trigger('error', [error]);
+            }
+        }
+
+        /**
+         * Oops! an arror occured!
+         * Clear messages before reconnect, because we will receive them all again after reconnection (or not).
+         * @asynchronous
+         */
+        function onClose() {
+            messages.length = 0;
+            $self.trigger('close');
+        }
+
+        /**
+         *
+         */
+        function onOpen() {
+            $self.trigger('open');
+        }
+
+        /**
+         * Public methods
+         */
+
+        /**
+         *
+         * @returns {*}
+         */
+        this.getSocket = function () {
+            return socket;
+        };
+
+        /**
+         *
+         * @returns {Object}
+         */
+        this.getMessages = function () {
+            return messages;
+        };
+
+        /**
+         *
+         * @param messageIds
+         */
+        this.markAsRead = function (messageIds) {
+            socket.markAsRead(messageIds);
+            var index;
+            angular.forEach(messageIds, function (id) {
+                index = getMessageIndexById(id);
+                if (index >= 0) {
+                    messages.splice(index, 1);
+                }
+            });
+        };
+
+        /**
+         *
+         */
+        this.markAsReadAll = function () {
+            var messageIds = [];
+            angular.forEach(messages, function (message) {
+                messageIds.push(message._id);
+            });
+            socket.markAsRead(messageIds);
+            messages.length = 0;
+        };
+
+        /**
+         */
+        this.on = function() {
+            $self.on.apply($self, arguments);
+        };
+
+        /**
+         */
+        this.off = function() {
+            $self.off.apply($self, arguments);
+        };
+
+        /**
+         * Configure
+         */
+        this.configure = function(_config) {
+            if ($.isFunction(_config)) {
+                _config = { filter: _config };
+            }
+            if (typeof _config !== 'object') {
+                throw "Puszek MessageChannel: configuration must be an object";
+            }
+            if (!$.isFunction(_config.filter)) {
+                _config.filter = function() {};
+            }
+            settings = $.extend({}, settings, _config);
+
+            return self;
+        };
+
+        this.configure(_socket, _config);
+
+        if (_socket.constructor === Puszek.connector.Socket) {
+            socket = _socket;
+        } else if (typeof _socket === 'object') {
+            socket = new Puszek.connector.Socket(_socket);
+        } else {
+            throw "Puszek MessageChannel: socket option must be an Puszek.Socket object, or a plain object with socket configuration.";
+        }
+
+        socket.on('packet', onPacket);
+        socket.on('close', onClose);
+        socket.on('open', onOpen);
+
+        this.connect = socket.connect;
+        this.disconnect = socket.disconnect;
+        this.isConnected = socket.isConnected;
     };
 })(window, jQuery);

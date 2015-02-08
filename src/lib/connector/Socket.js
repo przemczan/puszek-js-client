@@ -1,5 +1,5 @@
 (function(window, $) {
-    window.Puszek.Socket = function (_config) {
+    window.Puszek.connector.Socket = function (_config) {
 
         var $self = $(this), // jquery version of this
             self = this, // this ;)
@@ -67,12 +67,16 @@
          * @param _message
          */
         function onMessage(_message) {
+            var packet = false;
             try {
-                var packet = JSON.parse(_message.data);
+                packet = JSON.parse(_message.data);
+            } catch (e) {}
+
+            if (packet) {
                 $self.trigger('pre.packet', [packet]);
                 $self.trigger('packet', [packet]);
                 $self.trigger('post.packet', [packet]);
-            } catch (e) {}
+            }
         }
 
         /**
@@ -147,8 +151,8 @@
          */
         this.markAsRead = function(messageIds) {
             self.send(
-                Puszek.SocketRequest.TYPE_MESSAGE_MARK_AS_READ,
-                Puszek.SocketRequest.MessageIdList.create().ids(messageIds).get()
+                Puszek.connector.Request.TYPE_MESSAGE_MARK_AS_READ,
+                Puszek.connector.Request.MessageIdList.create().ids(messageIds).get()
             );
 
             return self;
@@ -179,7 +183,7 @@
          */
         this.send = function(_type, _data) {
             if (socket) {
-                Puszek.SocketRequest.create()
+                Puszek.connector.Request.create()
                     .type(_type)
                     .data(_data)
                     .send(socket);

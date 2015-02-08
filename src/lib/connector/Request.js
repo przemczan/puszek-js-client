@@ -1,6 +1,6 @@
 (function(window, $) {
 
-    window.Puszek.SocketRequest = {
+    window.Puszek.connector.Request = {
         TYPE_MESSAGE_MARK_AS_READ: 'message_mark_as_read',
 
         create: function() {

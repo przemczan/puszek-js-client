@@ -1,6 +1,6 @@
 (function(window, $) {
 
-    window.Puszek.SocketRequest.Message = {
+    window.Puszek.model.message.Message = {
         create: function() {
             return new Message();
         }
