@@ -517,7 +517,7 @@
         /**
          *
          */
-        this.markAsReadAll = function () {
+        this.markAllAsRead = function () {
             var messageIds = [];
             angular.forEach(messages, function (message) {
                 messageIds.push(message._id);

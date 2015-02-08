@@ -58,6 +58,8 @@ angular.module('przemczan.puszek')
 
             self.getMessages = messageChannel.getMessages;
             self.isConnected = messageChannel.isConnected;
+            self.markAllAsRead = messageChannel.markAllAsRead;
+            self.markAsRead = messageChannel.markAsRead;
         }
     }]);
 angular.module('przemczan.puszek')
