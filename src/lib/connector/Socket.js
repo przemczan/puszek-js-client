@@ -152,7 +152,7 @@
         this.markAsRead = function(messageIds) {
             self.send(
                 Puszek.connector.Request.TYPE_MESSAGE_MARK_AS_READ,
-                Puszek.connector.Request.MessageIdList.create().ids(messageIds).get()
+                Puszek.model.message.MessageIdList.create().ids(messageIds).get()
             );
 
             return self;
