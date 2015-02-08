@@ -556,7 +556,7 @@
             return self;
         };
 
-        this.configure(_socket, _config);
+        this.configure(_config);
 
         if (_socket.constructor === Puszek.connector.Socket) {
             socket = _socket;
